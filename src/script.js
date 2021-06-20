@@ -21,13 +21,13 @@ const scene = new THREE.Scene()
  * Galaxy
  */
 const parameters = {}
-parameters.count = 200000
-parameters.size = 0.005
+parameters.count = 50000
+parameters.size = 0.003
 parameters.radius = 4
 parameters.branches = 5
 parameters.spin = 1
 parameters.randomness = 2.0
-parameters.randomnessPower = 6
+parameters.randomnessPower = 8
 parameters.insideColor = '#0de1e1'
 parameters.outsideColor = '#6c02e1'
 
@@ -35,14 +35,31 @@ let geometry = null
 let material = null
 let points = null
 
+let blackHoleGeometry = null
+let blackHoleMaterial = null
+let blackHole = null
+let blackHoleLight = null
+
 const generateGalaxy = () =>
 {
     if(points !== null)
     {
         geometry.dispose()
         material.dispose()
+        blackHoleGeometry.dispose()
+        blackHoleMaterial.dispose()
         scene.remove(points)
+        scene.remove(blackHole)
     }
+
+    /**
+     * Black Hole
+     */
+    blackHoleGeometry = new THREE.SphereGeometry(0.3, 32, 32)
+    blackHoleMaterial = new THREE.MeshBasicMaterial( {color: 0x000000} )
+    blackHole = new THREE.Mesh( blackHoleGeometry, blackHoleMaterial );
+    blackHole.position.set(0, -0.05, 0)
+    scene.add(blackHole)
 
     /**
      * Geometry
@@ -105,7 +122,7 @@ const generateGalaxy = () =>
         uniforms:
         {
             uTime: { value: 0 },
-            uSize: { value: 20 * renderer.getPixelRatio() }
+            uSize: { value: 16 * renderer.getPixelRatio() }
         },    
         vertexShader: galaxyVertexShader,
         fragmentShader: galaxyFragmentShader
@@ -187,7 +204,7 @@ const tick = () =>
     const elapsedTime = clock.getElapsedTime()
 
     // Update material
-    material.uniforms.uTime.value = elapsedTime + 400
+    material.uniforms.uTime.value = elapsedTime + 200
 
     // Update controls
     controls.update()
